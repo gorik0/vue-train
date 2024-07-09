@@ -1,4 +1,7 @@
 <script setup>
+defineProps({
+  items: Array
+})
 import Card from './Card.vue'
 
 const addToBasket = () => {
@@ -9,9 +12,11 @@ const addToBasket = () => {
 <template>
   <div class="grid grid-cols-2 gap-2">
     <Card
-      title="Nike pro airBASS"
-      :price="1000"
-      :img="'/sneakers/sneakers-1.jpg'"
+      v-for="item in items"
+      :key="item.id"
+      :title="item.title"
+      :price="item.price"
+      :img="item.img"
       :isAddedToFavorite="true"
       :isAddedToBasket="true"
       :addToBasket="addToBasket"
