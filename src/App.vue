@@ -1,8 +1,17 @@
 <script setup>
-import Gorik from './Components/Gorik.vue'
+import Header from './Components/Header.vue'
+import CardList from './Components/CardList.vue'
+import Drawer from './Components/Drawer.vue'
 </script>
 
 <template>
-  <h1>Helo gorsik</h1>
-  <Gorik model="Здравушка" :fatAmount="1.2" />
+  <Drawer />
+  <div class="bg-white w-4/5 m-auto mt-10 rounded shadow-xl">
+    <Header />
+    <div class="p-10">
+      <h2 class="text-3xl bold">Кроссовки</h2>
+
+      <CardList />
+    </div>
+  </div>
 </template>
