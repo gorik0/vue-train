@@ -4,5 +4,5 @@ import Gorik from './Components/Gorik.vue'
 
 <template>
   <h1>Helo gorsik</h1>
-  <Gorik />
+  <Gorik model="Здравушка" :fatAmount="1.2" />
 </template>
