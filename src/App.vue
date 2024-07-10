@@ -6,29 +6,86 @@ import Header from './Components/Header.vue'
 import CardList from './Components/CardList.vue'
 import Drawer from './Components/Drawer.vue'
 
-const makeSneakersFromServer = (async) => {
-  const url = `http://localhost:8080/sneakers`
-  console.log(filters)
-  axios.get(url, { params: filters }).then((response) => {
-    items.value = response.data
-    console.log(items.value)
-  })
-}
+
+
+// :::: OBSERVABLES props ::::
+
 const items = ref([])
+
+
+
+
+
+
 
 const filters = reactive({
   sortBy: '',
+
+
   title: ''
 })
 
+
+
+
+
+
+
+
+// ::: FETCH DATA  functions  :::
+
+const fetchSneakers = async () => {
+
+  const url = `http://localhost:8080/sneakers`
+  const { data } = await axios.get(url, { params: filters })
+  items.value = data.map((item) => ({
+
+    ...item,
+    isFavorite: false,
+    favoriteId: 0
+  }))
+}
+
+const fetchSneakersFavorites = async () => {
+  const url = `http://localhost:8080/sneakers/favorites`
+  const { data: favorites } = await axios.get(url)
+  console.log(favorites);
+  items.value = items.value.map((item) => {
+    const isFavorite = favorites.find((favorite) => favorite.id === item.id)
+
+    if (isFavorite) {
+      return {
+        ...item,
+        isFavorite: true,
+        favoriteId: isFavorite.id
+      }
+    } else {
+      return item;
+    }
+  })
+}
+
+
+
+// :::: HANDLER user filter actions ::::
 function makeSortBy(event) {
   filters.sortBy = event.target.value
 }
 function makeQueryBy(event) {
+
   filters.title = event.target.value
 }
-onMounted(makeSneakersFromServer)
-watch(filters, makeSneakersFromServer)
+
+
+
+
+// ::: MAKE QUERY ::::
+onMounted(async () => {
+  await fetchSneakers()
+  await fetchSneakersFavorites()
+})
+
+watch(filters, fetchSneakers)
 </script>
 
 <template>
@@ -47,12 +104,8 @@ watch(filters, makeSneakersFromServer)
           </select>
           <div class="flex gap-3">
             <img src="/search.svg" alt="search" />
-            <input
-              @input="makeQueryBy"
-              type="text"
-              class="border-b focus:border-slate-400 outline-none"
-              placeholder="INPUT"
-            />
+            <input @input="makeQueryBy" type="text" class="border-b focus:border-slate-400 outline-none"
+              placeholder="INPUT" />
           </div>
         </div>
       </div>

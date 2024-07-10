@@ -38,6 +38,23 @@ func SetupEndpoints() {
 
 	http.HandleFunc("/sneakers", getSneakers())
 	http.HandleFunc("/refresh", refreshSnickers())
+	http.HandleFunc("/sneakers/favorites", getSneakersFavorites())
+}
+
+func getSneakersFavorites() func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+
+		sneakersDataBytes, _ := json.Marshal(SNEAKERS[:3])
+		reader := bytes.NewReader(sneakersDataBytes)
+		_, err := io.Copy(w, reader)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	}
 }
 
 func refreshSnickers() func(http.ResponseWriter, *http.Request) {
