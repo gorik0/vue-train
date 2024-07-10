@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, reactive, ref, watch } from 'vue'
+import { inject, onMounted, reactive, provide, ref, watch } from 'vue'
 
 import axios from 'axios'
 import Header from './Components/Header.vue'
@@ -20,10 +20,9 @@ const items = ref([])
 
 const filters = reactive({
   sortBy: '',
-
-
   title: ''
 })
+
 
 
 
@@ -67,6 +66,8 @@ const fetchSneakersFavorites = async () => {
 
 
 
+
+
 // :::: HANDLER user filter actions ::::
 function makeSortBy(event) {
   filters.sortBy = event.target.value
@@ -78,6 +79,17 @@ function makeQueryBy(event) {
 
 
 
+// ::: HANDLER user utils actions ::::
+
+
+const addToFavorite = async (item) => {
+
+  item.isFavorite = !item.isFavorite
+  console.log(item);
+
+}
+
+
 
 // ::: MAKE QUERY ::::
 onMounted(async () => {
@@ -86,6 +98,7 @@ onMounted(async () => {
 })
 
 watch(filters, fetchSneakers)
+provide('addToFavorite', addToFavorite)
 </script>
 
 <template>
