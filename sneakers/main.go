@@ -43,7 +43,7 @@ func SetupEndpoints() {
 func refreshSnickers() func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(200)
-		
+
 		w.Write([]byte("refreshing snickers OK!"))
 		SNEAKERS = getSneakerMockData(len(SNEAKERS))
 	}
@@ -55,11 +55,12 @@ func getSneakers() func(http.ResponseWriter, *http.Request) {
 		// GET "sort by" paraameter
 
 		sortBy := r.URL.Query().Get("sortBy")
+		queryByTitle := r.URL.Query().Get("title")
 
 		w.Header().Set("Content-Type", "application/json")
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 
-		sneakersData := getSneakersByFilter(sortBy)
+		sneakersData := getSneakersBy(sortBy, queryByTitle)
 		sneakersDataBytes, _ := json.Marshal(sneakersData)
 		reader := bytes.NewReader(sneakersDataBytes)
 		_, err := io.Copy(w, reader)
@@ -72,49 +73,60 @@ func getSneakers() func(http.ResponseWriter, *http.Request) {
 
 }
 
-func getSneakersByFilter(by string) []*Sneaker {
+func getSneakersBy(by string, queryByTitle string) []*Sneaker {
 
+	sneakers := make([]*Sneaker, 0)
+	if queryByTitle != "" {
+		for _, sneaker := range SNEAKERS {
+			if strings.Contains(strings.ToLower(sneaker.Title), strings.ToLower(queryByTitle)) {
+				sneakers = append(sneakers, sneaker)
+			}
+		}
+
+	} else {
+		sneakers = SNEAKERS
+	}
 	switch by {
 	case "title":
-		sortByTitle()
+		sortByTitle(sneakers)
 	case "price":
 
-		sortByPrice()
+		sortByPrice(sneakers)
 	case "-price":
 
-		sortByPriceDesc()
+		sortByPriceDesc(sneakers)
 	case "id":
-		sortByID()
+		sortByID(sneakers)
 
 	default:
-		sortByTitle()
+		sortByTitle(sneakers)
 	}
 
-	return SNEAKERS
+	return sneakers
 
 }
 
-func sortByTitle() {
-	sort.Slice(SNEAKERS, func(i, j int) bool {
-		return SNEAKERS[i].Title < SNEAKERS[j].Title
+func sortByTitle(s []*Sneaker) {
+	sort.Slice(s, func(i, j int) bool {
+		return s[i].Title < s[j].Title
 	})
 
 }
-func sortByPrice() {
-	sort.Slice(SNEAKERS, func(i, j int) bool {
-		return SNEAKERS[i].Price < SNEAKERS[j].Price
+func sortByPrice(s []*Sneaker) {
+	sort.Slice(s, func(i, j int) bool {
+		return s[i].Price < s[j].Price
 	})
 
 }
-func sortByPriceDesc() {
-	sort.Slice(SNEAKERS, func(i, j int) bool {
-		return SNEAKERS[i].Price > SNEAKERS[j].Price
+func sortByPriceDesc(s []*Sneaker) {
+	sort.Slice(s, func(i, j int) bool {
+		return s[i].Price > s[j].Price
 	})
 
 }
-func sortByID() {
-	sort.Slice(SNEAKERS, func(i, j int) bool {
-		return SNEAKERS[i].ID.String() < SNEAKERS[j].ID.String()
+func sortByID(s []*Sneaker) {
+	sort.Slice(s, func(i, j int) bool {
+		return s[i].ID.String() < s[j].ID.String()
 	})
 
 }
@@ -122,6 +134,7 @@ func sortByID() {
 func getSneakerMockData(dataAmount int) []*Sneaker {
 	sneakers := make([]*Sneaker, 0)
 	for i := 0; i < dataAmount; i++ {
+		time.Sleep(100 * time.Millisecond)
 		sneaker := randomSneaker()
 		log.Println(sneaker)
 		sneakers = append(sneakers, sneaker)
@@ -132,6 +145,7 @@ func getSneakerMockData(dataAmount int) []*Sneaker {
 
 func randomSneaker() *Sneaker {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	log.Println(r)
 	return &Sneaker{
 		ID:    uuid.New(),
 		Title: TITLE[r.Intn(len(TITLE))],

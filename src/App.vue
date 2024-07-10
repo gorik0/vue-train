@@ -1,42 +1,34 @@
 <script setup>
-import { onMounted, ref, watch } from 'vue'
+import { onMounted, reactive, ref, watch } from 'vue'
 
 import axios from 'axios'
 import Header from './Components/Header.vue'
 import CardList from './Components/CardList.vue'
 import Drawer from './Components/Drawer.vue'
-const items = ref([])
 
-let sortBy = ref('')
-
-function makeSortBy(event) {
-  sortBy.value = event.target.value
-}
-
-watch(sortBy, async () => {
-  try {
-    makeSneakersFromServer(sortBy.value)
-  } catch (err) {
-    console.log(err)
-  }
-})
-onMounted(() => {
-  // fetch('http://localhost:8080/sneakers')
-  //   .then((response) => response.json())
-  //   .then((data) => {
-  //     console.log(data)
-  //   })
-
-  makeSneakersFromServer()
-})
-
-function makeSneakersFromServer(sortBy) {
-  const url = `http://localhost:8080/sneakers?sortBy=${sortBy}`
-  axios.get(url).then((response) => {
+const makeSneakersFromServer = (async) => {
+  const url = `http://localhost:8080/sneakers`
+  console.log(filters)
+  axios.get(url, { params: filters }).then((response) => {
     items.value = response.data
     console.log(items.value)
   })
 }
+const items = ref([])
+
+const filters = reactive({
+  sortBy: '',
+  title: ''
+})
+
+function makeSortBy(event) {
+  filters.sortBy = event.target.value
+}
+function makeQueryBy(event) {
+  filters.title = event.target.value
+}
+onMounted(makeSneakersFromServer)
+watch(filters, makeSneakersFromServer)
 </script>
 
 <template>
@@ -56,6 +48,7 @@ function makeSneakersFromServer(sortBy) {
           <div class="flex gap-3">
             <img src="/search.svg" alt="search" />
             <input
+              @input="makeQueryBy"
               type="text"
               class="border-b focus:border-slate-400 outline-none"
               placeholder="INPUT"
