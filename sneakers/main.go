@@ -3,19 +3,21 @@ package main
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/google/uuid"
 	"io"
+	"log"
 	"math/rand"
 	"net"
 	"net/http"
 	"sort"
 	"strings"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 // ::: VARS :::::
 
-var SNEAKERS = getSneakerMockData(3)
+var SNEAKERS = getSneakerMockData(10)
 var TITLE = strings.Split("nike adidas belkelme toto sigomoto jira boosty", " ")
 var IMG = []string{
 	"/sneakers/sneakers-1.jpg",
@@ -41,6 +43,7 @@ func SetupEndpoints() {
 func refreshSnickers() func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(200)
+		
 		w.Write([]byte("refreshing snickers OK!"))
 		SNEAKERS = getSneakerMockData(len(SNEAKERS))
 	}
@@ -77,6 +80,9 @@ func getSneakersByFilter(by string) []*Sneaker {
 	case "price":
 
 		sortByPrice()
+	case "-price":
+
+		sortByPriceDesc()
 	case "id":
 		sortByID()
 
@@ -100,6 +106,12 @@ func sortByPrice() {
 	})
 
 }
+func sortByPriceDesc() {
+	sort.Slice(SNEAKERS, func(i, j int) bool {
+		return SNEAKERS[i].Price > SNEAKERS[j].Price
+	})
+
+}
 func sortByID() {
 	sort.Slice(SNEAKERS, func(i, j int) bool {
 		return SNEAKERS[i].ID.String() < SNEAKERS[j].ID.String()
@@ -111,6 +123,7 @@ func getSneakerMockData(dataAmount int) []*Sneaker {
 	sneakers := make([]*Sneaker, 0)
 	for i := 0; i < dataAmount; i++ {
 		sneaker := randomSneaker()
+		log.Println(sneaker)
 		sneakers = append(sneakers, sneaker)
 	}
 	sneakers = append(sneakers)

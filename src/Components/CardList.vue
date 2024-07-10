@@ -21,8 +21,5 @@ const addToBasket = () => {
       :isAddedToBasket="true"
       :addToBasket="addToBasket"
     />
-    <Card />
-    <Card />
-    <Card />
   </div>
 </template>

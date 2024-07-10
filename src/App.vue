@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 
 import axios from 'axios'
 import Header from './Components/Header.vue'
@@ -7,6 +7,19 @@ import CardList from './Components/CardList.vue'
 import Drawer from './Components/Drawer.vue'
 const items = ref([])
 
+let sortBy = ref('')
+
+function makeSortBy(event) {
+  sortBy.value = event.target.value
+}
+
+watch(sortBy, async () => {
+  try {
+    makeSneakersFromServer(sortBy.value)
+  } catch (err) {
+    console.log(err)
+  }
+})
 onMounted(() => {
   // fetch('http://localhost:8080/sneakers')
   //   .then((response) => response.json())
@@ -14,11 +27,16 @@ onMounted(() => {
   //     console.log(data)
   //   })
 
-  axios.get('http://localhost:8080/sneakers').then((response) => {
-    items.value = response.data
-    console.log(items)
-  })
+  makeSneakersFromServer()
 })
+
+function makeSneakersFromServer(sortBy) {
+  const url = `http://localhost:8080/sneakers?sortBy=${sortBy}`
+  axios.get(url).then((response) => {
+    items.value = response.data
+    console.log(items.value)
+  })
+}
 </script>
 
 <template>
@@ -30,10 +48,10 @@ onMounted(() => {
         <h2 class="text-3xl bold">Кроссовки</h2>
 
         <div class="flex gap-5">
-          <select class="outline-none border-2 rounded p-1">
-            <option>По популярности</option>
-            <option>По популярностиЫ</option>
-            <option>По популярности</option>
+          <select @change="makeSortBy" class="outline-none border-2 rounded p-1">
+            <option value="title">ПО title</option>
+            <option value="price">ПО price</option>
+            <option value="-price">ПО -price</option>
           </select>
           <div class="flex gap-3">
             <img src="/search.svg" alt="search" />
