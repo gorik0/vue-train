@@ -1,10 +1,10 @@
 <script setup>
 
 
-import { inject } from 'vue';
+// import { inject } from 'vue';
 
-const addToFavorite = inject('addToFavorite')
-
+// const addToFavorite = inject('addToFavorite')
+const emit = defineEmits(['addToFavorites'])
 
 
 defineProps({
@@ -21,6 +21,6 @@ const addToBasket = () => {
   <div class="grid grid-cols-2 gap-2">
     <Card v-for="item in items" :key="item.id" :title="item.title" :price="item.price" :img="item.img"
       :isAddedToFavorite="item.isFavorite" :isAddedToBasket="true" :addToBasket="addToBasket"
-      :addToFavorite="() => addToFavorite(item)" />
+      :addToFavorite="() => emit('addToFavorites', item)" />
   </div>
 </template>

@@ -82,12 +82,14 @@ function makeQueryBy(event) {
 // ::: HANDLER user utils actions ::::
 
 
-const addToFavorite = async (item) => {
+const addToFavorites = async (item) => {
 
   item.isFavorite = !item.isFavorite
   console.log(item);
 
 }
+
+
 
 
 
@@ -98,7 +100,7 @@ onMounted(async () => {
 })
 
 watch(filters, fetchSneakers)
-provide('addToFavorite', addToFavorite)
+// provide('addToFavorite', addToFavorite)
 </script>
 
 <template>
@@ -123,7 +125,7 @@ provide('addToFavorite', addToFavorite)
         </div>
       </div>
 
-      <CardList :items="items" />
+      <CardList :items="items" @addToFavorites="addToFavorites" />
     </div>
   </div>
 </template>
