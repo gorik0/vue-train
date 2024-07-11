@@ -1,9 +1,31 @@
 import './assets/main.css'
 
 import { createApp } from 'vue'
+import { autoAnimatePlugin } from '@formkit/auto-animate/vue'
+import { createMemoryHistory, createRouter } from 'vue-router'
 import App from './App.vue'
 
 
+import Home from './pages/Home.vue'
+import Favorites from './pages/Favorites.vue'
+
+const routes = [
+  { path: '/',name: 'home', component: Home },
+  { path: '/favorites',name: 'favorites', component: Favorites },
+]
 
 
-createApp(App).mount('#app')
+const router = createRouter({
+  history: createMemoryHistory(),
+  routes,
+})
+
+
+const app = createApp(App)
+
+app.use(autoAnimatePlugin)
+app.use(router)
+app.mount('#app')
+
+
+

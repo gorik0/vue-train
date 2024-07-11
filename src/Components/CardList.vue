@@ -18,7 +18,7 @@ import Card from './Card.vue'
 </script>
 
 <template>
-  <div class="grid grid-cols-2 gap-2">
+  <div class="grid grid-cols-2 gap-2" v-auto-animate>
     <Card v-for="item in items" :key="item.id" :title="item.title" :price="item.price" :img="item.img"
       :isAddedToFavorite="item.isFavorite" :isAddedToBasket="item.isAddedToBasket"
       :addToFavorite="() => emit('addToFavorites', item)" :addToBasket="() => addToBasket(item)" />
