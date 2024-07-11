@@ -1,9 +1,9 @@
 <script setup>
 
 
-// import { inject } from 'vue';
+import { inject } from 'vue';
 
-// const addToFavorite = inject('addToFavorite')
+const { addToBasket } = inject('basket')
 const emit = defineEmits(['addToFavorites'])
 
 
@@ -12,15 +12,15 @@ defineProps({
 })
 import Card from './Card.vue'
 
-const addToBasket = () => {
-  console.log('add to basket')
-}
+
+
+
 </script>
 
 <template>
   <div class="grid grid-cols-2 gap-2">
     <Card v-for="item in items" :key="item.id" :title="item.title" :price="item.price" :img="item.img"
-      :isAddedToFavorite="item.isFavorite" :isAddedToBasket="true" :addToBasket="addToBasket"
-      :addToFavorite="() => emit('addToFavorites', item)" />
+      :isAddedToFavorite="item.isFavorite" :isAddedToBasket="item.isAddedToBasket"
+      :addToFavorite="() => emit('addToFavorites', item)" :addToBasket="() => addToBasket(item)" />
   </div>
 </template>

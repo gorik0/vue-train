@@ -12,20 +12,14 @@ import Drawer from './Components/Drawer.vue'
 
 const items = ref([])
 
+const itemsInBasket = ref([])
 
-
-
-
-
+const isDrawerOpen = ref(false)
 
 const filters = reactive({
   sortBy: '',
   title: ''
 })
-
-
-
-
 
 
 
@@ -41,7 +35,8 @@ const fetchSneakers = async () => {
 
     ...item,
     isFavorite: false,
-    favoriteId: 0
+    favoriteId: null,
+    isAddedToBasket: false
   }))
 }
 
@@ -82,6 +77,31 @@ function makeQueryBy(event) {
 // ::: HANDLER user utils actions ::::
 
 
+const addToBasket = (item) => {
+
+  console.log(`"Add to basket!" ${item.isAddedToBasket}`);
+
+  if (!item.isAddedToBasket) {
+    item.isAddedToBasket = true
+    itemsInBasket.value.push(item)
+  } else {
+
+    item.isAddedToBasket = false
+    itemsInBasket.value = itemsInBasket.value.filter((itemInBasket) => itemInBasket.id !== item.id)
+  }
+  console.log(`"Add to basket!" ${item.isAddedToBasket}`);
+
+}
+
+const openDrawer = () => {
+  console.log("open");
+  isDrawerOpen.value = true
+}
+const closeDrawer = () => {
+
+  isDrawerOpen.value = false
+}
+
 const addToFavorites = async (item) => {
   item.isFavorite = !item.isFavorite
 
@@ -103,6 +123,7 @@ const addToFavorites = async (item) => {
       console.log(err);
     }
   } else {
+
     // ::: DELETE FAVORITE  ::::
 
 
@@ -134,13 +155,18 @@ onMounted(async () => {
 })
 
 watch(filters, fetchSneakers)
-// provide('addToFavorite', addToFavorite)
+
+
+// ::::PROVIDERS ::::
+
+provide('basket', { openDrawer, closeDrawer, addToBasket, itemsInBasket })
+
 </script>
 
 <template>
-  <!-- <Drawer /> -->
+  <Drawer v-if="isDrawerOpen" />
   <div class="bg-white w-4/5 m-auto mt-10 rounded shadow-xl">
-    <Header />
+    <Header @open-drawer="openDrawer" />
     <div class="p-10">
       <div class="flex items-center justify-between">
         <h2 class="text-3xl bold">Кроссовки</h2>

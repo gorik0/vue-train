@@ -1,4 +1,11 @@
-<script setup></script>
+<script setup>
+
+const emit = defineEmits(['open-drawer'])
+
+
+
+
+</script>
 
 <template>
   <div class="bg-white">
@@ -9,7 +16,7 @@
         <p>Магазин кроссовок</p>
       </div>
 
-      <ul class="flex gap-10 center">
+      <ul @click="() => emit('open-drawer')" class="flex gap-10 center">
         <li class="flex items-center gap5 cursor-pointer">
           <img src="/cart.svg" alt="cart" />
           <b>Корзина</b>

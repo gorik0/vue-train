@@ -20,10 +20,8 @@ import DrawItemList from './DrawItemList.vue'
           <div class="flex-1 border-10 border-dashed border-b mx-2"></div>
           <span>НАЛОГ</span>
         </div>
-        <button
-          disabled="true"
-          class="transition disabled:opacity-50 cursor-pointer w-full bg-black opacity-80 hover:opacity-100 rounded-xl text-white p-3 rounded"
-        >
+        <button disabled="true"
+          class="transition disabled:opacity-50 cursor-pointer w-full bg-black opacity-80 hover:opacity-100 rounded-xl text-white p-3 rounded">
           Оформить
         </button>
       </div>
