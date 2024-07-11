@@ -5,7 +5,8 @@ defineProps({
 
   title: String,
   price: Number,
-  img: String
+  img: String,
+  addToBasket: Function
 
 
 })
@@ -20,8 +21,8 @@ defineProps({
       <p>{{ title }}</p>
       <div class="flex justify-between">
         <b>{{ price }} rub</b>
-        <img class="opacity-30 hover:opacity-100 hover:translate-x-3 transition cursor-pointer" src="/close.svg"
-          alt="delete_item" />
+        <img @click="addToBasket" class="opacity-30 hover:opacity-100 hover:translate-x-3 transition cursor-pointer"
+          src="/close.svg" alt="delete_item" />
       </div>
     </div>
   </div>

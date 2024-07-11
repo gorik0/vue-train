@@ -1,6 +1,14 @@
 <script setup>
 
+
 const emit = defineEmits(['open-drawer'])
+
+
+defineProps({
+  price: Number
+})
+
+
 
 
 
@@ -19,7 +27,7 @@ const emit = defineEmits(['open-drawer'])
       <ul @click="() => emit('open-drawer')" class="flex gap-10 center">
         <li class="flex items-center gap5 cursor-pointer">
           <img src="/cart.svg" alt="cart" />
-          <b>Корзина</b>
+          <b>Корзина {{ price }} руб.</b>
         </li>
         <li class="flex items-center gap5 cursor-pointer">
           <img src="/heart.svg" alt="heart" />

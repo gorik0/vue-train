@@ -44,9 +44,17 @@ type SneakerFavorite struct {
 	  ParentId  uuid.UUID `json:"parentId"`
 }
 
+
+type Order struct {
+	ID    uuid.UUID `json:"id"`
+	Items []Sneaker `json:"items"`
+	Price int       `json:"price"`
+}
+
 func SetupEndpoints() {
 
 	http.HandleFunc("/sneakers", getSneakers())
+	http.HandleFunc("/sneakers/order", makeOrder())
 	http.HandleFunc("/refresh", refreshSnickers())
 	http.HandleFunc("/sneakers/favorites", getSneakersFavorites())
 	http.HandleFunc("/sneakers/favorites/add", addToFavorites())
@@ -139,6 +147,23 @@ func refreshSnickers() func(http.ResponseWriter, *http.Request) {
 
 		w.Write([]byte("refreshing snickers OK!"))
 		SNEAKERS = getSneakerMockData(len(SNEAKERS))
+	}
+}
+func makeOrder() func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		w.Header().Add("Access-Control-Allow-Origin", "*")
+		w.Header().Add("Access-Control-Allow-Methods", "DELETE, POST, GET, OPTIONS")
+		w.Header().Add("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With")
+		w.WriteHeader(200)
+		var order  *Order
+		if err:= json.NewDecoder(r.Body).Decode(&order); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		log.Println(err)
+		return
+	}
+		log.Println("order", order)
+		w.Write([]byte("order created"))
 	}
 }
 

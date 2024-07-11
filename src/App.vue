@@ -1,5 +1,5 @@
 <script setup>
-import { inject, onMounted, reactive, provide, ref, watch } from 'vue'
+import { inject, onMounted, reactive, provide, ref, watch, computed } from 'vue'
 
 import axios from 'axios'
 import Header from './Components/Header.vue'
@@ -13,6 +13,16 @@ import Drawer from './Components/Drawer.vue'
 const items = ref([])
 
 const itemsInBasket = ref([])
+
+
+
+const tax = computed(() => {
+  return priceTotal.value * 0.2
+})
+
+const priceTotal = computed(() => {
+  return itemsInBasket.value.reduce((acc, item) => acc + item.price, 0)
+})
 
 const isDrawerOpen = ref(false)
 
@@ -102,6 +112,25 @@ const closeDrawer = () => {
   isDrawerOpen.value = false
 }
 
+
+const makeOrder = async () => {
+  const url = `http://localhost:8080/sneakers/order`
+
+  try {
+    const { data } = await axios.post(url, {
+      items: itemsInBasket.value,
+      price: priceTotal.value
+    })
+
+    for (const item of itemsInBasket.value) {
+      item.isAddedToBasket = false
+    }
+    itemsInBasket.value = []
+  } catch (err) {
+    console.log(err);
+  }
+}
+
 const addToFavorites = async (item) => {
   item.isFavorite = !item.isFavorite
 
@@ -157,16 +186,20 @@ onMounted(async () => {
 watch(filters, fetchSneakers)
 
 
+
+
+
+
 // ::::PROVIDERS ::::
 
-provide('basket', { openDrawer, closeDrawer, addToBasket, itemsInBasket })
+provide('basket', { openDrawer, closeDrawer, addToBasket, itemsInBasket, makeOrder })
 
 </script>
 
 <template>
-  <Drawer v-if="isDrawerOpen" />
+  <Drawer v-if="isDrawerOpen" :total="priceTotal" :tax="tax" @makeOrder="makeOrder" />
   <div class="bg-white w-4/5 m-auto mt-10 rounded shadow-xl">
-    <Header @open-drawer="openDrawer" />
+    <Header @open-drawer="openDrawer" :price="priceTotal" />
     <div class="p-10">
       <div class="flex items-center justify-between">
         <h2 class="text-3xl bold">Кроссовки</h2>
