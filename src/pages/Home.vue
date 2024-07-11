@@ -69,6 +69,7 @@ const fetchSneakersFavorites = async () => {
 
 
 
+
 const addToFavorites = async (item) => {
     item.isFavorite = !item.isFavorite
 

@@ -16,8 +16,8 @@ defineProps({
 <template>
   <div
     class="relative border-4 border-slate-300 m-10 p-5 rounded-3xl cursor-pointer ease-out transition hover:-translate-y-3 hover:shadow-2xl">
-    <img class="absolute top-3 left-3" @click="addToFavorite" :src="isAddedToFavorite ? '/like-2.svg' : '/like-1.svg'"
-      alt="like" />
+    <img v-if="addToFavorite" class="absolute top-3 left-3" @click="addToFavorite"
+      :src="isAddedToFavorite ? '/like-2.svg' : '/like-1.svg'" alt="like" />
     <img :src="img" alt="sn-1" />
     <p>{{ title }}</p>
 

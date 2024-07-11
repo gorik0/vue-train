@@ -10,7 +10,6 @@ import Drawer from './Components/Drawer.vue'
 
 // :::: OBSERVABLES props ::::
 
-
 const itemsInBasket = ref([])
 
 const makeOrderInProccess = ref(false)
@@ -91,7 +90,6 @@ const makeOrder = async () => {
 
 
 
-
 // ::: MAKE QUERY ::::
 
 
@@ -104,6 +102,7 @@ const makeOrder = async () => {
 // ::::PROVIDERS ::::
 
 provide('basket', { openDrawer, closeDrawer, addToBasket, itemsInBasket, makeOrder })
+
 
 </script>
 
