@@ -14,6 +14,7 @@ const items = ref([])
 
 const itemsInBasket = ref([])
 
+const makeOrderInProccess = ref(false)
 
 
 const tax = computed(() => {
@@ -25,6 +26,7 @@ const priceTotal = computed(() => {
 })
 
 const isDrawerOpen = ref(false)
+
 
 const filters = reactive({
   sortBy: '',
@@ -115,8 +117,9 @@ const closeDrawer = () => {
 
 const makeOrder = async () => {
   const url = `http://localhost:8080/sneakers/order`
-
+  console.log(makeOrderInProccess);
   try {
+    makeOrderInProccess.value = true
     const { data } = await axios.post(url, {
       items: itemsInBasket.value,
       price: priceTotal.value
@@ -128,6 +131,8 @@ const makeOrder = async () => {
     itemsInBasket.value = []
   } catch (err) {
     console.log(err);
+  } finally {
+    makeOrderInProccess.value = false
   }
 }
 
@@ -197,7 +202,8 @@ provide('basket', { openDrawer, closeDrawer, addToBasket, itemsInBasket, makeOrd
 </script>
 
 <template>
-  <Drawer v-if="isDrawerOpen" :total="priceTotal" :tax="tax" @makeOrder="makeOrder" />
+  <Drawer v-if="isDrawerOpen" :total="priceTotal" :tax="tax" @makeOrder="makeOrder"
+    :makeOrderInProccess="makeOrderInProccess" />
   <div class="bg-white w-4/5 m-auto mt-10 rounded shadow-xl">
     <Header @open-drawer="openDrawer" :price="priceTotal" />
     <div class="p-10">

@@ -1,12 +1,14 @@
 <script setup>
-import { transformVNodeArgs } from 'vue';
+import { ref } from 'vue';
 import DrawerHead from './DrawerHead.vue'
 import DrawItemList from './DrawItemList.vue'
+import EmptyBasket from '@/EmptyBasket.vue';
 
 
 defineProps({
   total: Number,
   tax: Number,
+  makeOrderInProccess: Boolean
 
 })
 
@@ -22,7 +24,7 @@ const emit = defineEmits(['makeOrder'])
 
       <DrawItemList />
 
-      <div class="flex flex-col gap-5 mt-10">
+      <div v-if="total > 0" class="flex flex-col gap-5 mt-10">
         <div class="flex">
           <b>{{ total }} rubs</b>
           <div class="flex-1 border-10 border-dashed border-b mx-2"></div>
@@ -33,10 +35,16 @@ const emit = defineEmits(['makeOrder'])
           <div class="flex-1 border-10 border-dashed border-b mx-2"></div>
           <span>НАЛОГ</span>
         </div>
-        <button :disabled="(total === 0)" @click="() => emit('makeOrder')"
+        <button :disabled="(total === 0 || makeOrderInProccess)" @click="() => emit('makeOrder')"
           class="transition disabled:opacity-50 cursor-pointer w-full bg-black opacity-80 hover:opacity-100 rounded-xl text-white p-3 rounded">
           Оформить
         </button>
+      </div>
+      <div v-else class="flex justify-center items-center height-80 ">
+
+
+        <EmptyBasket />
+
       </div>
     </div>
   </div>
