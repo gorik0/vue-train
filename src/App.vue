@@ -50,7 +50,7 @@ const fetchSneakersFavorites = async () => {
   const { data: favorites } = await axios.get(url)
   console.log(favorites);
   items.value = items.value.map((item) => {
-    const isFavorite = favorites.find((favorite) => favorite.id === item.id)
+    const isFavorite = favorites.find((favorite) => favorite.parentId === item.id)
 
     if (isFavorite) {
       return {
@@ -83,9 +83,43 @@ function makeQueryBy(event) {
 
 
 const addToFavorites = async (item) => {
-
   item.isFavorite = !item.isFavorite
-  console.log(item);
+
+
+  if (item.isFavorite) {
+
+    const url = `http://localhost:8080/sneakers/favorites/add`
+
+    try {
+
+      const { data } = await axios.post(url, {
+        parentId: item.id
+      })
+
+      item.favoriteId = data.id
+      item.isFavorite
+      console.log(data);
+    } catch (err) {
+      console.log(err);
+    }
+  } else {
+    // ::: DELETE FAVORITE  ::::
+
+
+    const url = `http://localhost:8080/sneakers/favorites/delete`
+
+    try {
+
+      await axios.get(url, {
+        params: {
+          id: item.favoriteId
+        }
+      })
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
 
 }
 

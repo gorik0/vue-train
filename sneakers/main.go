@@ -7,8 +7,10 @@ import (
 	"log"
 	"math/rand"
 	"net"
+
 	"net/http"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 
@@ -16,8 +18,12 @@ import (
 )
 
 // ::: VARS :::::
+var VACANT_INDEXES = make([]int, 0)
+
 
 var SNEAKERS = getSneakerMockData(10)
+var SNEAKERS_FAVORITES  = make([]*SneakerFavorite, 0) 
+
 var TITLE = strings.Split("nike adidas belkelme toto sigomoto jira boosty", " ")
 var IMG = []string{
 	"/sneakers/sneakers-1.jpg",
@@ -33,21 +39,91 @@ type Sneaker struct {
 	Price int       `json:"price"`
 	Img   string    `json:"img"`
 }
+type SneakerFavorite struct {
+	ID    int `json:"id"`
+	  ParentId  uuid.UUID `json:"parentId"`
+}
 
 func SetupEndpoints() {
 
 	http.HandleFunc("/sneakers", getSneakers())
 	http.HandleFunc("/refresh", refreshSnickers())
 	http.HandleFunc("/sneakers/favorites", getSneakersFavorites())
+	http.HandleFunc("/sneakers/favorites/add", addToFavorites())
+	http.HandleFunc("/sneakers/favorites/delete", deleteFromFavorites())
+}
+
+func deleteFromFavorites()func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+
+id:= r.URL.Query().Get("id")
+println("delete from favorites", id)
+w.Header().Add("Access-Control-Allow-Origin", "*")
+w.Header().Add("Access-Control-Allow-Methods", "DELETE, POST, GET, OPTIONS")
+w.Header().Add("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With")
+w.WriteHeader(200)
+
+for i, item := range SNEAKERS_FAVORITES {
+	if strconv.Itoa(item.ID )== id {
+		SNEAKERS_FAVORITES = append(SNEAKERS_FAVORITES[:i], SNEAKERS_FAVORITES[i+1:]...)
+		VACANT_INDEXES = append(VACANT_INDEXES, item.ID)
+		break
+	}
+}
+w.Write([]byte("deleted from favorites"))
+	}}
+
+func addToFavorites()  func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		println("add to favorites")
+		w.Header().Add("Access-Control-Allow-Origin", "*")
+		w.Header().Add("Access-Control-Allow-Methods", "DELETE, POST, GET, OPTIONS")
+		w.Header().Add("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With")
+		w.WriteHeader(200)
+
+		var item  *SneakerFavorite
+		if err := json.NewDecoder(r.Body).Decode(&item); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		log.Println(err)
+		return
+	}
+	
+	
+	log.Println("item", item)
+	favorite := SneakerFavorite{
+		ID: getVacantIndex(),
+		ParentId: item.ParentId,
+	}
+	SNEAKERS_FAVORITES = append(SNEAKERS_FAVORITES, &favorite)
+	// favoriteBytes, _ := json.Marshal(favorite)
+	w.Header().Set("Content-Type", "application/json")
+	if err:= json.NewEncoder(w).Encode(favorite); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+	}
+	}
+
+func getVacantIndex() int {
+
+
+	if len(VACANT_INDEXES) == 0 {
+		return len(SNEAKERS_FAVORITES)
+	}else{
+
+		id := VACANT_INDEXES[0]
+		VACANT_INDEXES = VACANT_INDEXES[1:]
+		return id
+	}
 }
 
 func getSneakersFavorites() func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
+		log.Println(SNEAKERS_FAVORITES)
 
 		w.Header().Set("Content-Type", "application/json")
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 
-		sneakersDataBytes, _ := json.Marshal(SNEAKERS[:3])
+		sneakersDataBytes, _ := json.Marshal(SNEAKERS_FAVORITES)
 		reader := bytes.NewReader(sneakersDataBytes)
 		_, err := io.Copy(w, reader)
 		if err != nil {
