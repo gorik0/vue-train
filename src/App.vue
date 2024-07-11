@@ -184,11 +184,37 @@ const addToFavorites = async (item) => {
 
 // ::: MAKE QUERY ::::
 onMounted(async () => {
+  // :::: GET items from localstorage
+
+  const fromLocalStorage = localStorage.getItem("basket")
+
+  itemsInBasket.value = fromLocalStorage ? JSON.parse(fromLocalStorage) : []
+  itemsInBasket.value
+
+
   await fetchSneakers()
   await fetchSneakersFavorites()
+
+
+  items.value = items.value.map((item) => ({
+    ...item,
+    isAddedToBasket: itemsInBasket.value.some((basketItem) => (basketItem.id === item.id))
+  }))
+
 })
 
+
+
+// ::: WATCHERS ::: 
 watch(filters, fetchSneakers)
+
+watch(itemsInBasket, () => {
+
+  localStorage.setItem("basket", JSON.stringify(itemsInBasket.value))
+
+}, {
+  deep: true
+})
 
 
 
